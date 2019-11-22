@@ -1,6 +1,6 @@
 # FSML-Estimators
 
-Various R algorithm used in statistics class regarding estimation
+**Various R algorithm used in statistics class regarding estimation**
 
 
 
@@ -14,7 +14,7 @@ Confidence interval
 
 
 
-<u>Maths notions:</u>
+#### Maths notions:
 
 ​	method of moments
 
