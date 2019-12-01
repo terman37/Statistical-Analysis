@@ -39,16 +39,18 @@ alpha=0.05
   hist(B)
   # guess a normal distribution
   muhat = mean(B)
-  sig2hat =  # To be done
+  sig2hat = var(B)
+  n=length(B)
   # goodness-of-fit test - Kolmogorov-Smirnov
-  ks.test(A,'pnorm',muhat,sqrt(sig2hat))
+  ks.test(B,'pnorm',muhat,sqrt(sig2hat))
   
   # Confidence interval for mu
+  lowerbound = muhat - sqrt(sig2hat)/sqrt(n)*qt(1-alpha/2,n)
+  upperbound = muhat + sqrt(sig2hat)/sqrt(n)*qt(1-alpha/2,n)
   
   # Confidence interval for sig2
-  
-  
-  
+  lowerboundsig = (n-1)*sqrt(sig2hat)/qchisq(1-alpha/2,n-1)
+  upperboundsig = (n-1)*sqrt(sig2hat)/qchisq(alpha/2,n-1)
   
 #*********************************************** 
 # Third sample:
