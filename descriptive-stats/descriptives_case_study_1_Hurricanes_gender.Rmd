@@ -1,0 +1,181 @@
+---
+title: "Hurricanes Gender"
+output:
+  html_document:
+    df_print: paged
+---
+
+Data from the study:
+
+Jung, Kiju, Sharon Shavitt, Madhu Viswanathan, and Joseph M. Hilbe.
+"Female hurricanes are deadlier than male hurricanes." Proceedings of the National Academy of Sciences 111, no. 24 (2014): 8782-8787.
+
+Load libraries:
+```{r}
+library(tidyverse)
+library(ggthemes) ## color blind friendly palette
+theme_set(theme_bw())
+```
+
+Import the data in R:
+```{r}
+hur_raw <- read_csv('hurricanes.csv',
+                col_types = 'cdcd')
+hur_raw
+```
+
+```{r}
+hur <- rename(hur_raw, name = Hurricane,
+                       year = Year,
+                       gender = `Gender of Name`,
+                       deaths = `Number of Deaths`)
+hur
+```
+
+```{r}
+summary(hur)
+```
+
+Let's check there are no surprises:
+```{r}
+unique(hur$gender)
+```
+
+
+```{r}
+hur <- mutate(hur, gender = factor(gender, levels = c('Female', 'Male')))
+```
+
+```{r}
+summary(hur)
+```
+
+A cautionary note: please, DO NOT USE 'attach'/'detach'!!!
+
+# Distribution
+
+```{r}
+hist(hur$deaths)
+```
+
+Boxplots:
+```{r}
+boxplot(deaths ~ gender, data = hur)
+```
+
+Those two extreme events might drive all our conclusions: let's put them aside for a moment:
+```{r}
+arrange(hur, desc(deaths))
+```
+
+
+```{r}
+hur1 <- subset(hur, deaths < 150)
+```
+
+Let's redo the summaries:
+```{r}
+summary(hur1)
+```
+
+and boxplots:
+```{r}
+boxplot(deaths ~ gender, data = hur1)
+```
+
+We can also plot the histograms:
+```{r}
+ggplot(hur1, aes(x = deaths)) +
+  geom_histogram() +
+  facet_grid(gender ~ .)
+```
+
+
+Few numerical summaries:
+```{r}
+hur1 %>%
+  group_by(gender) %>%
+  summarise(
+    n = n(),
+    mean = mean(deaths),
+    sd = sd(deaths),
+    min = min(deaths),
+    Q1 = quantile(deaths, 0.25),
+    median = median(deaths),
+    Q3 = quantile(deaths, 0.75),
+    max = max(deaths)
+  )
+```
+
+If we look at the mean, we might phrase our findings as: 'The average number of 
+deaths in female-named hurricanes is about 24, compared to 14 in male named 
+hurricanes.'. The reader could mentally translate this to: 'a typical 
+female-named hurricane has 24 deaths, compared to 14 in male named hurricanes'.
+But look at this:
+
+```{r}
+freq_abs <- with(subset(hur1, gender == "Female"), table(deaths <= 24))
+freq_abs
+```
+and relative frequencies:
+```{r}
+prop.table(freq_abs)
+```
+
+Almost 80% of the female-named hurricanes actually heave a death toll no greater
+than 24! Maybe '24' is not that typical after all.
+
+What about the median? The median in the 2 groups is exactly identical, and it
+tells us that in both female and male-named hurricanes, half have up to 5
+deaths, and half have more:
+
+```{r}
+sort(subset(hur1, gender == "Female")$deaths)
+```
+
+```{r}
+sort(subset(hur1, gender == "Male")$deaths)
+```
+
+This is also shown by the ECDF (kind of):
+```{r}
+ggplot(hur1, aes(x = deaths)) +
+  stat_ecdf() +
+  facet_grid(~ gender)
+```
+
+What about the influence of the year?
+```{r}
+ggplot(hur1, aes(x = year, y = deaths, color = gender)) +
+  geom_point() +
+  scale_color_colorblind()
+```
+
+Interesting! Up to 1970, names were almost exclusively from females. After 1970,
+the distribution seems much more balanced:
+
+```{r}
+filter(hur1, year >= 1978) %>%
+  ggplot(aes(x = year, y = deaths, color = gender)) +
+  geom_point() +
+  scale_color_colorblind()
+```
+
+How do the 2 group compare in this subset?
+```{r}
+filter(hur1, year >= 1978) %>%
+  group_by(gender) %>%
+  summarise(
+    n = n(),
+    mean = mean(deaths),
+    sd = sd(deaths),
+    min = min(deaths),
+    Q1 = quantile(deaths, 0.25),
+    median = median(deaths),
+    Q3 = quantile(deaths, 0.75),
+    max = max(deaths)
+  )
+```
+
+In females, half of the hurricanes have between 3 and 11 deaths,
+compared to 1-15 in males. The median is 5 in both groups.

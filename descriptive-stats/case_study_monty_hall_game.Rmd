@@ -1,0 +1,29 @@
+
+```{r}
+set.seed(1234)
+N <- 10000
+```
+
+
+```{r}
+X <- sample(LETTERS[1:3], size = N, replace = TRUE)
+Y <- sample(LETTERS[1:3], size = N, replace = TRUE)
+Z <- rep(NA, N)
+```
+
+```{r}
+draw_Z <- function(i) {
+  sample(setdiff(LETTERS[1:3], c(X[i], Y[i])), size = 1)
+}
+Z <- Vectorize(draw_Z)(seq_len(N))
+```
+
+
+```{r}
+mean(x = (X == Y))
+```
+
+```{r}
+mean(X != Y)
+```
+

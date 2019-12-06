@@ -1,0 +1,287 @@
+---
+title: "Descriptive Statistics"
+output:
+  html_document:
+    df_print: paged
+  pdf_document:
+    keep_tex: yes
+---
+
+# Frequency distribution
+
+## Discrete variables
+Grades from two students:
+```{r}
+A <- factor(c(17, 16, 16, 16, 15, 16, 18, 17, 16, 16), levels = 14:18)
+B <- factor(c(16, 15, 14, 17, 14, 17, 14, 14, 14, 14), levels = 14:18)
+```
+
+Absolute frequencies:
+```{r}
+table(A)
+```
+
+```{r}
+prop.table(table(A))
+```
+
+```{r}
+table(B)
+```
+
+```{r}
+prop.table(table(B))
+```
+
+Bars plots:
+```{r}
+#png('010_010_distribution_discrete_barplot_A.png',
+#   width = 6, height = 3, units = 'in', res = 512)
+
+barplot(table(A), main = "A")
+
+#dev.off()
+```
+
+```{r}
+#png('010_010_distribution_discrete_barplot_B.png',
+#    width = 6, height = 3, units = 'in', res = 512)
+
+barplot(table(B), main = "B")
+
+#dev.off()
+```
+
+## Continuous variables
+
+```{r}
+head(islands)
+```
+
+```{r}
+ht <- hist(islands)
+```
+
+```{r}
+distrib <- with(ht, data.frame(i = seq_along(counts),
+                      from = head(breaks, n = -1),
+                      to = tail(breaks, n = -1),
+                      n_i = counts,
+                      f_i = counts / sum(counts)))
+distrib
+```
+
+```{r}
+#png('010_020_distribution_continuous_equal_sizes.png',
+#    width = 8, height = 5, units = 'in', res = 512)
+#par(mar = c(4.2, 4.2, 2.1, 2.1))
+hist(islands, xlab = 'square miles', main = '', col = 'gray')
+#dev.off()
+```
+
+```{r}
+# png('010_030_distribution_continuous_unequal_sizes.png',
+#     width = 8, height = 5, units = 'in', res = 512)
+# par(mar = c(4.2, 4.2, 2.1, 2.1))
+
+ht2 <- hist(islands, breaks = c(0, 50, 100, 1000, 10000, 20000),
+            main = '', xlab = 'square miles')
+
+# dev.off()
+
+distrib <- with(ht2, data.frame(i = seq_along(counts),
+                               class_i = sprintf('(%d, %d]', head(breaks, n = -1), tail(breaks, n = -1)),
+                               n_i = counts,
+                               f_i = counts / sum(counts),
+                               h_i = density))
+distrib
+```
+
+```{r}
+# png('010_030_distribution_continuous_unequal_sizes_zoom.png',
+#     width = 8, height = 5, units = 'in', res = 512)
+# par(mar = c(4.2, 4.2, 2.1, 2.1))
+
+ht2 <- hist(islands, breaks = c(0, 50, 100, 1000, 10000, 20000),
+            main = '', xlab = 'square miles',
+            col = 'gray',
+            xlim = c(0, 2000))
+
+# dev.off()
+```
+
+## AJO - test1
+```{r}
+#trick to remove the levels (change from categrorical variable to vector)
+A
+as.character(A)
+as.numeric(as.character(A))
+```
+
+
+## Empirical Cumulative Distribution Function
+
+```{r}
+A <- as.numeric(as.character(A))
+B <- as.numeric(as.character(B))
+Fn_A <- ecdf(A)
+Fn_B <- ecdf(B)
+
+# png('010_040_010_ecdf_students_A.png',
+#     width = 6, height = 6, units = 'in', res = 512)
+
+plot(Fn_A)
+
+# dev.off()
+
+# png('010_040_010_ecdf_students_B.png',
+#     width = 6, height = 6, units = 'in', res = 512)
+
+plot(Fn_B)
+
+# dev.off()
+```
+
+```{r}
+Fn_islands <- ecdf(islands)
+#png('010_040_020_ecdf_islands.png',
+#    width = 6, height = 6, units = 'in', res = 512)
+plot(Fn_islands)
+#dev.off()
+```
+
+## Quantile function
+
+```{r}
+quantile(A, probs = c(0.1, 0.5))
+```
+
+# Positional indexes
+
+## AJO- side example
+```{r}
+X <- rnorm(50,mean=168,sd=0.2)
+
+hist(X)
+xm <- mean(X)
+xm
+#one wrong value (=outlier)
+X[50]<-42
+hist(X)
+xm <- mean(X)
+xm
+#mean is not ok now.
+xmed<-median(X)
+xmed
+#median is more robust to outliers.
+```
+
+
+
+## mean
+```{r}
+mean(islands)
+```
+
+## median
+```{r}
+median(islands)
+```
+
+## quartiles
+```{r}
+quantile(islands, c(0.25, 0.5, 0.75))
+```
+
+50% of the islands have surface area between 20.5 and 183.25 squared miles.
+
+## boxplot
+```{r}
+# png('010_040_030_boxplot_islands.png',
+#     width = 6, height = 6, units = 'in', res = 512)
+boxplot(islands, log = "y")
+# dev.off()
+```
+
+## variance
+```{r}
+var(islands)
+sd(islands)
+```
+
+## coefficient of variation
+```{r}
+sd(islands) / mean(islands)
+```
+
+## interquartile range
+
+```{r}
+IQR(islands)
+```
+
+# Multivariate distributions
+
+```{r}
+library(car)
+
+data(SLID)
+head(SLID)
+```
+
+
+
+```{r}
+# png('010_050_010_scatterplot.png',
+#     width = 8, height = 6, units = 'in', res = 512)
+plot(wages ~ education, pch = 16, cex = 0.4, data = SLID)
+# dev.off()
+```
+
+```{r}
+#png('010_050_020_boxplot.png',
+#    width = 6, height = 6, units = 'in', res = 512)
+plot(wages ~ sex, data = SLID)
+# dev.off()
+```
+
+```{r}
+library(ggplot2)
+
+# png('010_050_030_histograms.png',
+#     width = 8, height = 6, units = 'in', res = 512)
+ggplot(SLID, aes(wages)) +
+  geom_histogram() +
+  facet_grid(sex ~ .)
+# dev.off()
+```
+
+```{r}
+# png('010_050_040_boxplot.png',
+#     width = 6, height = 6, units = 'in', res = 512)
+plot(wages ~ language, data = SLID)
+# dev.off()
+```
+
+## Contingency tables
+```{r}
+with(SLID, table(sex, language))
+```
+
+## Linear Correlation Coefficient
+
+```{r}
+with(SLID, cor(education, wages))
+```
+
+```{r}
+with(SLID, cor(education, wages, use = 'pairwise.complete.obs'))
+```
+
+```{r}
+# png('010_050_050_scatterplot_lowess.png',
+#     width = 8, height = 6, units = 'in', res = 512)
+plot(wages ~ education, pch = 16, cex = 0.4, data = SLID)
+lines(with(na.omit(SLID), lowess(education, wages)), col = 'blue', lwd = 2)
+# dev.off()
+```
