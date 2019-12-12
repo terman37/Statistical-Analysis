@@ -10,9 +10,11 @@
 - Various R algorithm used in statistics class regarding estimation**
   - Point estimators ()
        - Binomial / Poisson, Uniform / Exponential distributions
-     - Confidence interval
+  - Confidence interval
 
-
+- Various R examples of linear regression
+  - simple linear regression
+  - multiple linear regression
 
 #### Maths notions:
 
