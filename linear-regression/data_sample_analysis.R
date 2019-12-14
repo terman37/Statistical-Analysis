@@ -68,3 +68,23 @@ L
 # variable selection
 Lb=lm(Y~.,A[,c(1,5)])
 summary(Lb)
+
+
+# ***************************************************************************
+# Y2 A1
+Y = as.matrix(read.csv('Y2.txt',header = FALSE))
+A = read.table('A1.txt')
+
+L=lm(Y~A[,1])
+summary(L)$adj.r.squared
+L=lm(Y~A[,2])
+summary(L)$adj.r.squared
+L=lm(Y~A[,3])
+summary(L)$adj.r.squared
+L=lm(Y~A[,4])
+summary(L)$adj.r.squared
+L=lm(Y~A[,5])
+summary(L)$adj.r.squared
+
+L=lm(Y~A[,c(5,1)])
+S=summary(L)
