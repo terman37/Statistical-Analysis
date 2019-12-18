@@ -1,0 +1,168 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Set working directory to current one
+
+```{r}
+library(rstudioapi)
+current_path = rstudioapi::getActiveDocumentContext()$path 
+setwd(dirname(current_path ))
+```
+
+Import Ble dataset
+```{r}
+Ble = read.table('Dataset_Ble.txt',header=TRUE,sep=';')
+attach(Ble)
+```
+Initial check of imported data
+```{r}
+dim(Ble)
+head(Ble)
+```
+
+One-way anova influence of variete on rdt
+- Visual Inspection via boxplot
+```{r}
+boxplot(rdt~variete,col='yellow')
+```
+
+Create model
+```{r}
+vLM = lm(rdt~variete)
+```
+
+Check assumptions on the gaussianity of the residuals
+
+- Homogeneity of variances (leveneTest)
+--> LeveneTest p-value small - there is no homogeneity of variances (what to do ???)
+```{r}
+if(!require(car)) install.packages("car")
+library(car)
+leveneTest(vLM)
+```
+
+- Gaussianity (QQplot)
+--> QQPlot ok noise gaussian
+```{r}
+plot(vLM,2)
+```
+
+Run Anova on model
+--> p-value very small - there is an influence of variete on rdt
+```{r}
+AvLM = anova(vLM)
+AvLM
+```
+
+One-way anova influence of phyto on rdt
+- Visual Inspection via boxplot
+```{r}
+boxplot(rdt~phyto,col='red')
+```
+
+Create model
+```{r}
+pLM = lm(rdt~phyto)
+```
+
+Check assumptions on the gaussianity of the residuals
+
+- Homogeneity of variances (leveneTest)
+--> LeveneTest p-value >0.05 - there is homogeneity of variances
+```{r}
+if(!require(car)) install.packages("car")
+library(car)
+leveneTest(pLM)
+```
+
+- Gaussianity (QQplot)
+--> QQPlot ok noise gaussian
+```{r}
+plot(pLM,2)
+```
+
+Run Anova on model
+--> p-value very big - there is no influence of phyto on rdt
+```{r}
+ApLM = anova(pLM)
+ApLM
+```
+
+Two-way anova influence of phyto/variete on rdt
+- Visual Inspection via boxplot
+
+```{r}
+boxplot(rdt ~ phyto * variete, col=c('green','blue'))
+```
+
+Create model
+```{r}
+vpLM = lm(rdt ~ phyto * variete)
+```
+
+Check assumptions on the gaussianity of the residuals
+
+- Homogeneity of variances (leveneTest)
+--> LeveneTest p-value >0.05 - there is homogeneity of variances
+```{r}
+if(!require(car)) install.packages("car")
+library(car)
+leveneTest(vpLM)
+```
+
+- Gaussianity (QQplot)
+--> QQPlot ok noise gaussian
+```{r}
+plot(vpLM,2)
+```
+
+Run Anova on model
+--> p-value phyto:variete very big - there is no influence of cross effect of phyto/variete on rdt
+```{r}
+AvpLM = anova(vpLM)
+AvpLM
+```
+
+Use additive model instead
+```{r}
+ADDvpLM = lm(rdt ~ phyto + variete)
+```
+Homgeneity of variance + normality
+```{r}
+plot(ADDvpLM,1)
+plot(ADDvpLM,2)
+```
+
+
+Anova Result
+
+```{r}
+ADDAvpLM = anova(ADDvpLM)
+ADDAvpLM
+```
+
+
+
+TO-BE-CEHCKED
+
+test - anova for unbalanced design (???)
+```{r}
+my_anova <- aov(rdt ~ phyto * variete)
+Anova(my_anova, type = "III")
+```
+
+
+
+Others
+
+Pairwise 
+```{r}
+vpAOV = aov(rdt ~ phyto * variete)
+par(las=1)
+plot(TukeyHSD(vpAOV))
+```
+
+
+
