@@ -27,6 +27,12 @@ One-way anova influence of variete on rdt
 ```{r}
 boxplot(rdt~variete,col='yellow')
 ```
+nb of observations by variete
+```{r}
+summary(variete)
+```
+
+
 
 Create model
 ```{r}
@@ -48,6 +54,11 @@ leveneTest(vLM)
 ```{r}
 plot(vLM,2)
 ```
+Shapiro
+```{r}
+shapiro.test(vLM)
+```
+
 
 Run Anova on model
 --> p-value very small - there is an influence of variete on rdt
@@ -60,6 +71,10 @@ One-way anova influence of phyto on rdt
 - Visual Inspection via boxplot
 ```{r}
 boxplot(rdt~phyto,col='red')
+```
+nb of observations by phyto
+```{r}
+summary(phyto)
 ```
 
 Create model
