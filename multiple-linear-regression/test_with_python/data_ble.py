@@ -1,7 +1,9 @@
 # Imports
 import pandas as pd
 import pingouin as pg
-
+import seaborn as sns
+import matplotlib.pyplot as plt
+# plt.ion()
 # Importing file
 Ble = pd.read_csv('../Dataset_Ble.txt', header=0, sep=';', index_col=0)
 # Changing to Category datatype for explanatory variables
@@ -12,17 +14,23 @@ Ble['phyto'] = Ble['phyto'].astype('category')
 Yname = 'rdt'
 Xname = 'variete'
 print('\n******** %s vs %s **********' % (Yname, Xname))
+plot = sns.boxplot(x=Xname, y=Yname, data=Ble, hue='phyto')
 #
 # Homoscedasticity
 Homo = pg.homoscedasticity(data=Ble, dv=Yname, group=Xname, method="levene")
 print(Homo)
+# print(Ble[Ble['variete']=='V1'].var())
+# print(Ble[Ble['variete']=='V2'].var())
+# print(Ble[Ble['variete']=='V3'].var())
+# print(Ble[Ble['variete']=='V4'].var())
 # Normality
-Norm = pg.normality(data=Ble, dv=Yname, group=Xname, method="shapiro")
-print(Norm)
+# Norm = pg.normality(data=Ble, dv=Yname, group=Xname, method="shapiro")
+# print(Norm)
 # Normality of residuals
 lm = pg.linear_regression(Ble[Xname].cat.codes, Ble[Yname])
 Normall = pg.normality(lm.residuals_)
 print(Normall)
+plot = pg.qqplot(lm.residuals_, dist='norm')
 
 # OneWay Anova
 aov = Ble.anova(dv=Yname, between=Xname, detailed=True)
@@ -37,12 +45,13 @@ print('\n******** %s vs %s **********' % (Yname, Xname))
 Homo = pg.homoscedasticity(data=Ble, dv=Yname, group=Xname)
 print(Homo)
 # Normality
-Norm = pg.normality(data=Ble, dv=Yname, group=Xname)
-print(Norm)
+# Norm = pg.normality(data=Ble, dv=Yname, group=Xname)
+# print(Norm)
 # Normality of residuals
 lm = pg.linear_regression(Ble[Xname].cat.codes, Ble[Yname])
 Normall = pg.normality(lm.residuals_)
 print(Normall)
+plot = pg.qqplot(lm.residuals_, dist='norm')
 
 # OneWay Anova
 aov = Ble.anova(dv=Yname, between=Xname, detailed=True)
@@ -72,6 +81,7 @@ print(Normall)
 aov = Ble.anova(dv=Yname, between=Xname, detailed=True)
 print(aov)
 
+plt.show()
 # # Basic dataset info
 # print("\nShape of data: ")
 # print(Ble.shape)
