@@ -31,6 +31,7 @@ Tree1MAX = rpart(iris$Species~.,data=iris[,-5],control = rpart.control(cp=10^-9,
 plot(Tree1MAX)
 
 plotcp(Tree1MAX)
+summary(Tree1MAX)
 
 #####################################################################################
 # use sample dataset for regression
