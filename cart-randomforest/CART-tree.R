@@ -7,8 +7,8 @@ data(iris)
 
 # Tree to explain species by all other columns
 Tree1 = rpart(iris$Species~.,data=iris[,-5])
-
 Tree1
+
 # can construct tree using naming convention
 # * at the end of the line means terminal node (leaves)
 
@@ -25,6 +25,7 @@ Tree1
 # setosa node value -- particular to classification
 # (0.33333333 0.33333333 0.33333333) vector of "posterior probabilities" associated to each label -- particular to classification
 
+plot(Tree1)
 
 #####################################################################################
 # use sample dataset for regression
@@ -32,7 +33,6 @@ data(mtcars)
 
 # Tree to explain species by all other columns
 Tree2 = rpart(mtcars$mpg~.,data=mtcars[,-1])
-
 Tree2
 
 # 1) root 32 1126.04700 20.09062  
@@ -41,5 +41,12 @@ Tree2
 #     5) hp< 192.5 14   59.87214 18.26429 *
 #   3) cyl< 5 11  203.38550 26.66364 *
 
-# 1126.04700 errors should decrease when splitting node
+# 1126.04700 errors -- should decrease when splitting node
 # 20.09062 prediction associated to the node
+
+# Maxiaml tree
+help("rpart.control")
+Tree2 = rpart(mtcars$mpg~.,data=mtcars[,-1],control = rpart.control(cp=10^-9,minsplit=2))
+Tree2
+plot(Tree2)
+
