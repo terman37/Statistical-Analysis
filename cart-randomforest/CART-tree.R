@@ -27,6 +27,11 @@ Tree1
 
 plot(Tree1)
 
+Tree1MAX = rpart(iris$Species~.,data=iris[,-5],control = rpart.control(cp=10^-9,minsplit=2))
+plot(Tree1MAX)
+
+plotcp(Tree1MAX)
+
 #####################################################################################
 # use sample dataset for regression
 data(mtcars)
@@ -49,4 +54,5 @@ help("rpart.control")
 Tree2 = rpart(mtcars$mpg~.,data=mtcars[,-1],control = rpart.control(cp=10^-9,minsplit=2))
 Tree2
 plot(Tree2)
+
 
