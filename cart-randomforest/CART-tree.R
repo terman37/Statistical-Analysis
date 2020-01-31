@@ -32,6 +32,16 @@ plot(Tree1MAX)
 
 plotcp(Tree1MAX)
 summary(Tree1MAX)
+printcp(Tree1MAX)
+A=printcp(Tree1MAX)
+alphaseq = A[,1]
+K=length(alphaseq)
+for (i in 1:(K-1)){
+  T=prune(Tree1MAX,cp=alphaseq[K+1-i])
+  plot(T)
+  text(T)
+}
+
 
 #####################################################################################
 # use sample dataset for regression
@@ -56,4 +66,59 @@ Tree2 = rpart(mtcars$mpg~.,data=mtcars[,-1],control = rpart.control(cp=10^-9,min
 Tree2
 plot(Tree2)
 
+#####################################################################################
 
+
+# learning and test samples
+u=sample(1:150,120)
+learning = iris[u,]
+test = iris[-u,]
+
+Tree = rpart(learning[,5]~.,data=learning[,-5],cp=0.02,minsplit=2)
+plot(Tree)
+text(Tree)
+
+# Prediction
+
+# vector of posterior possibilty
+predict(Tree)
+# predictions
+predict(Tree, type = "class")
+
+# Predict new observation
+newobs=as.list(c(Sepal.Length=3.2,Sepal.Width=2.8,Petal.Length=3.2,Petal.Width=1.8))
+predict(Tree, newdata=newobs, type = "class")
+
+# Surrogate splits
+summary(Tree)
+
+# for leaves:
+# Node number 13: 6 observations
+# predicted class=virginica   expected loss=0.3333333  P(node) =0.05
+#   class counts:     0     2     4
+#   probabilities: 0.000 0.333 0.667 
+
+# for intermediates nodes
+# Node number 3: 81 observations,    complexity param=0.4303797
+#   predicted class=virginica   expected loss=0.4938272  P(node) =0.675
+#   class counts:     0    40    41
+#   probabilities: 0.000 0.494 0.506 
+#   left son=6 (44 obs) right son=7 (37 obs)
+#   Primary splits:
+#     Petal.Width  < 1.75 to the left,  improve=29.684240, (0 missing)
+#     Petal.Length < 4.95 to the left,  improve=29.460860, (0 missing)
+#     Sepal.Length < 6.35 to the left,  improve= 8.554024, (0 missing)
+#     Sepal.Width  < 2.75 to the left,  improve= 2.616766, (0 missing)
+#   Surrogate splits:
+#     Petal.Length < 4.75 to the left,  agree=0.889, adj=0.757, (0 split)
+#     Sepal.Length < 6.35 to the left,  agree=0.753, adj=0.459, (0 split)
+#     Sepal.Width  < 3.05 to the left,  agree=0.679, adj=0.297, (0 split)
+
+# nb of surrogate split max = nb of explanatory variables - 1
+# max nb of surrogate can be set as a parameter
+# 
+# first in primary split --> best split
+# no use for others
+# surrogate split: if first primary split value is missing 
+# then use first surrogate (so splitting would be quite the same when removing primary split value from data)
+ 
