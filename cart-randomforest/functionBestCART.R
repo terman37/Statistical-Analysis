@@ -23,3 +23,4 @@ Tree = BestTree(X,Y)
 plot(Tree)
 text(Tree)
 printcp(Tree)
+
