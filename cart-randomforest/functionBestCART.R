@@ -4,6 +4,7 @@ library(rpart)
 BestTree <- function(X,Y){
 
   TreeMAX = rpart(Y~.,data=X,control = rpart.control(cp=10^-9,minsplit=2))
+  # plotcp(TreeMAX)
   CPs=TreeMAX$cptable
   smallest_xerror = which(CPs[,'xerror'] == min(CPs[,'xerror']))
   oneSE = CPs[smallest_xerror,'xerror']+CPs[smallest_xerror,'xstd']
