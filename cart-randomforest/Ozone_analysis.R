@@ -181,3 +181,17 @@
   vozone$varselect.thres
   vozone$varselect.interp
   vozone$varselect.pred
+  
+  ozonec = ozone[,c(4,3,12,9)]
+  y = ozone[,2]  
+  
+  # then create CART tree with selected variables
+  library(rpart)
+  
+  T = rpart(y~.,data = as.data.frame(ozonec),cp=10^-9,minsplit=2)
+  plotcp(T)  
+  printcp(T)
+  TT = prune(T,cp=0.0225)
+  plot(TT)
+  text(TT)
+  
