@@ -4,8 +4,8 @@
   ozone = read.table('Dataset_ozone.txt',header=TRUE,sep=';',dec = ",")
 
 # imports
-# install.packages('ggplot2')
-    library(ggplot2)
+  # install.packages('ggplot2')
+  library(ggplot2)
 
 # First look
   dim(ozone)
@@ -139,3 +139,45 @@
   # all pvalues are less than 5% --> stop the backward selection
   # keep this model.
   
+# Create train / test sets
+
+  u=1:112
+  v=sample(u,90)
+  ozone_learn = ozone[v,]
+  ozone_test = ozone[-v,]
+  
+# Bagging
+  library(ipred)  
+  A = bagging(maxO3~.,data=ozone_learn,nbag=50)
+  bagt = predict(A,newdata = ozone_test)  
+  bagt  
+  
+  bagr <- function(ozone_learn,ozone_test){
+    err=c()
+    for (k in 1:50) {
+      A = bagging(maxO3~.,data=ozone_learn,nbag=k)
+      bagt = predict(A,newdata = ozone_test)
+      e = 1/nrow(ozone_test) * sum((bagt-ozone_test$maxO3)^2)
+      err = c(err,e)
+    }
+    bagr = err
+  }
+  
+  plot(bagr(ozone_learn,ozone_test),type='l')
+  
+# RandomForest
+  library(randomForest)
+  
+  rf_reg = randomForest(maxO3~.,data=ozone_learn,xtest=ozone_test[,-2],ytest=ozone_test[,'maxO3'],ntree=500,importance=TRUE)
+  rf_reg
+  
+  names(rf_reg)
+  rf_reg$importance
+  
+  # variable selection
+  library(VSURF)
+  
+  vozone = VSURF(maxO3~., data=ozone)
+  vozone$varselect.thres
+  vozone$varselect.interp
+  vozone$varselect.pred
