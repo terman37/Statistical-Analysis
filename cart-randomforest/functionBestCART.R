@@ -24,6 +24,7 @@ Bagging <- function(X,Y,nbtree=5,nbobs=30){
     bagtree = append(bagtree,list(Treek))
     names(bagtree)[k] <- paste("Tree",k)
   }
+  # return collection of trees
   Bagging <- bagtree
 }
 
@@ -32,16 +33,14 @@ data(mtcars)
 X = mtcars[,-1]
 Y = mtcars[,1]
 
-Trees = Bagging(X,Y,nbtree=10,nbobs=30)
+Trees = Bagging(X,Y,nbtree=10,nbobs=50)
 
-newobs=as.list(c(disp=183,hp=175,drat=3.45,wt=2.42,qsec=18.5,vs=1,am=0,gear=3,carb=2))
-predict(Trees[[1]], newdata=newobs)
+newobs=X[6,]
 result = 0
 for (k in 1:length(Trees)) {
-  result = result + 1/k *predict(Trees[[k]], newdata=newobs)
+  result = result + 1 / length(Trees) * predict(Trees[[k]], newdata=newobs)
 }
-
-
+result
 
 # Tree = BestTree(X,Y)
 # plot(Tree)
