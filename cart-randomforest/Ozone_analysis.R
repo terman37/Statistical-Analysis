@@ -94,5 +94,48 @@
   pca_ozone$scale     # =1 in this case as not normalized PCA, else std dev of each variable
   pca_ozone$loadings  # definition of new variables (linear combination of old variables)
   
+  plot(pca_ozone)
+  # biplot(pca_ozone)
+  pca_ozone
+  # each value is sqrt of eigen values (=variance explained by the first new variable)
+  s=pca_ozone$sdev
+  cumsum(s^2/sum(s^2)) # proportion of variance explained by the first i variables
   
+  # 2 first new variables explained about 96% of variance
+  # only keeps those 2
+  newdataset = pca_ozone$scores[,1:2]
+  
+  newdata = cbind(ozone$maxO3,newdataset)
+  colnames(newdata)=c('maxO3','Comp1','Comp2')
+  
+  # now rerun linear model on new dataset
+  reg_pca = lm(maxO3~Comp1+Comp2,data=as.data.frame(newdata))
+  reg_pca  
+  
+  # Comp1 and Comp2 are linear combination of all variables
+  # no variable selection
+  
+# Variable selection
+  # backward selection on linear model (one by one removal)
+  # T9 has the biggest pvalue --> suppress it
+  reg_multi_2 = lm(maxO3~T12+T15+Ne9+Ne12+Ne15+Vx9+Vx12+Vx15+maxO3v,data = ozone)
+  summary(reg_multi_2)
+  # Vx12 has the biggest pvalue --> suppress it
+  reg_multi_3 = lm(maxO3~T12+T15+Ne9+Ne12+Ne15+Vx9+Vx15+maxO3v,data = ozone)
+  summary(reg_multi_3)
+  # Ne15 has the biggest pvalue --> suppress it
+  reg_multi_4 = lm(maxO3~T12+T15+Ne9+Ne12+Vx9+Vx15+maxO3v,data = ozone)
+  summary(reg_multi_4)
+  # Ne12 has the biggest pvalue --> suppress it
+  reg_multi_5 = lm(maxO3~T12+T15+Ne9+Vx9+Vx15+maxO3v,data = ozone)
+  summary(reg_multi_5)
+  # T15 has the biggest pvalue --> suppress it
+  reg_multi_6 = lm(maxO3~T12+Ne9+Vx9+Vx15+maxO3v,data = ozone)
+  summary(reg_multi_6)
+  # Vx15 has the biggest pvalue --> suppress it
+  reg_multi_7 = lm(maxO3~T12+Ne9+Vx9+maxO3v,data = ozone)
+  summary(reg_multi_7)
+  
+  # all pvalues are less than 5% --> stop the backward selection
+  # keep this model.
   
